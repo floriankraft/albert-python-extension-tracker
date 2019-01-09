@@ -37,6 +37,34 @@ def findIconPathByFileName(fileName):
     iconNames.append("text-x-generic")
     return findIconPathByIconNames(iconNames)
 
+def getResultSet(query):
+    items = []
+    trackerProcess = subprocess.Popen(['tracker', 'search', '--disable-snippets', '--disable-color', query], stdout=subprocess.PIPE)
+    for line in trackerProcess.stdout:
+        outputLine = line.decode().strip()
+        if outputLine.startswith('file://'):
+            path = unquote(outputLine, encoding='utf-8')[7:]
+            fileName = path.rsplit('/', 1)[-1]
+            mimeType, encoding = mimetypes.guess_type(fileName)
+            iconPath = findIconPathByFileName(fileName)
+            items.append(
+                Item(
+                    id=fileName,
+                    icon=iconPath,
+                    text=fileName,
+                    subtext=path,
+                    actions=[UrlAction("Open", "%s" % outputLine)]
+                )
+            )
+    return items
+
+def getEmptyResultSet(query):
+    return [Item(
+                id="No results",
+                icon=appIconPath,
+                text="No results",
+                subtext="Your search for \"%s\" did not return any results." % query)]
+
 def getDefaultResultSet():
     return [Item(
                 id=__prettyname__,
@@ -51,29 +79,9 @@ def handleQuery(query):
         strippedQuery = query.string.strip()
         items = []
         if len(strippedQuery) > 2:
-            result = subprocess.Popen(['tracker', 'search', '--disable-snippets', '--disable-color', strippedQuery], stdout=subprocess.PIPE)
-            for line in result.stdout:
-                urlEncodedPath = line.decode().strip()
-                if urlEncodedPath.startswith('file://'):
-                    clearTextPath = unquote(urlEncodedPath, encoding='utf-8')[7:]
-                    fileName = clearTextPath.rsplit('/', 1)[-1]
-                    mimeType, encoding = mimetypes.guess_type(fileName)
-                    items.append(
-                        Item(
-                            id=fileName,
-                            icon=findIconPathByFileName(fileName),
-                            text=fileName,
-                            subtext=clearTextPath,
-                            actions=[UrlAction("Open", "%s" % urlEncodedPath)]
-                        )
-                    )
+            items = getResultSet(strippedQuery)
             if not items:
-                items.append(
-                    Item(
-                        id="No results",
-                        icon=appIconPath,
-                        text="No results",
-                        subtext="Your search for \"%s\" did not return any results." % strippedQuery))
+                items = getEmptyResultSet(strippedQuery)
 
         if not items:
             items = getDefaultResultSet()
