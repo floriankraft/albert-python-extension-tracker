@@ -45,7 +45,6 @@ def getResultSet(query):
         if outputLine.startswith('file://'):
             path = unquote(outputLine, encoding='utf-8')[7:]
             fileName = path.rsplit('/', 1)[-1]
-            mimeType, encoding = mimetypes.guess_type(fileName)
             iconPath = findIconPathByFileName(fileName)
             items.append(
                 Item(

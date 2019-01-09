@@ -8,13 +8,11 @@ Documentation of the python plugin system is here: <https://albertlauncher.githu
 
 For inspiration see: <https://github.com/albertlauncher/python>
 
-Original file (stolen from) was: <https://github.com/albertlauncher/python/blob/dev/arch_wiki/__init__.py>
+Original files (stolen from) were:
+
+* <https://github.com/albertlauncher/python/blob/dev/locate.py>
+* <https://github.com/albertlauncher/python/blob/dev/arch_wiki/__init__.py>
 
 ## Development
 
 To see log output simply start albert via console.
-
-## Todo
-
-* Plugin should execute `tracker search <query>` or similar.
-  * Something similar happens here: <https://github.com/albertlauncher/python/blob/dev/locate.py>
